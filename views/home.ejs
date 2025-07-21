@@ -2,18 +2,38 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Short URLs</title>
 </head>
 
 <body>
-    <h1>Hey From Server</h1>
-    <% urls.forEach(url=> { %>
-        <li>
-            <%= url.shortID %>
-        </li>
-        <% }) %>
+    <h1>URL Shortener</h1>
+
+    <form method="POST" action="/url/shorten">
+        <label for="url">Enter URL:</label>
+        <input type="text" name="url" placeholder="https://example.com" required />
+        <button type="submit">Shorten</button>
+    </form>
+
+    <% if (urls.length > 0) { %>
+        <ul>
+            <% urls.forEach(url => { %>
+                <li>
+                    <a href="http://localhost:3000/<%= url.shortID %>" target="_blank">
+                        http://localhost:3000/<%= url.shortID %>
+                    </a>
+                    &nbsp;→&nbsp;
+                    <a href="<%= url.redirectURL %>" target="_blank">
+                        <%= url.redirectURL %>
+                    </a>
+                </li>
+            <% }) %>
+        </ul>
+    <% } else { %>
+        <p>No URLs yet.</p>
+    <% } %>
+
 </body>
 
 </html>

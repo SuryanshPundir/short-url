@@ -10,6 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI)
@@ -23,7 +24,7 @@ app.set('views', './views');
 // Routes
 app.use('/url', urlRoutes);
 
-app.get('/test', async (req, res) => {
+app.get('/', async (req, res) => {
     const allURLs = await URL.find();
     res.render('home', { urls: allURLs });  // use "urls" to match template
 });
