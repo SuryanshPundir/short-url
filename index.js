@@ -9,7 +9,6 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware to parse JSON
 app.use(express.json());
 
 // MongoDB connection
@@ -17,23 +16,28 @@ mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('✅ Connected to MongoDB'))
     .catch((err) => console.error('❌ MongoDB connection error:', err));
 
+// View engine
+app.set('view engine', 'ejs');
+app.set('views', './views');
+
 // Routes
 app.use('/url', urlRoutes);
+
+app.get('/test', async (req, res) => {
+    const allURLs = await URL.find();
+    res.render('home', { urls: allURLs });  // use "urls" to match template
+});
 
 // Redirect route
 app.get('/:shortID', async (req, res) => {
     const shortID = req.params.shortID;
-
     const entry = await URL.findOneAndUpdate(
         { shortID },
         { $push: { visitHistory: { timestamp: Date.now() } } },
         { new: true }
     );
 
-    if (!entry) {
-        return res.status(404).send('❌ URL not found');
-    }
-
+    if (!entry) return res.status(404).send('❌ URL not found');
     res.redirect(entry.redirectURL);
 });
 
