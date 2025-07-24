@@ -1,9 +1,10 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import cookieParser from 'cookie-parser';
 import URL from './models/url.js';
-
 import urlRoutes from './routes/url.js';
 import userRoutes from './routes/user.js';
+import restrictToLoggedInUser from './middleware/auth.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -13,6 +14,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI)
@@ -24,8 +26,10 @@ app.set('view engine', 'ejs');
 app.set('views', './views');
 
 // Routes
-app.use('/url', urlRoutes);
+
+app.use('/url', restrictToLoggedInUser, urlRoutes);
 app.use('/user', userRoutes);
+
 
 app.get('/', async (req, res) => {
     const allURLs = await URL.find();

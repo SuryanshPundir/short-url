@@ -2,9 +2,14 @@ import { nanoid } from "nanoid";
 import URL from "../models/url.js";
 
 async function handleGenerateNewShortUrl(req, res) {
-  const { url } = req.body;
+  let { url } = req.body;
 
   if (!url) return res.status(400).json({ error: "URL is required" });
+
+  // ✅ Add http:// if missing
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    url = 'http://' + url;
+  }
 
   const shortID = nanoid(8);
 
@@ -12,9 +17,9 @@ async function handleGenerateNewShortUrl(req, res) {
     shortID,
     redirectURL: url,
     visitHistory: [],
+    createdBy: req.user._id
   });
 
-  // Redirect back to homepage after creation
   res.redirect('/');
 }
 
