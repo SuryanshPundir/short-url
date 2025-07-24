@@ -4,7 +4,7 @@ import cookieParser from 'cookie-parser';
 import URL from './models/url.js';
 import urlRoutes from './routes/url.js';
 import userRoutes from './routes/user.js';
-import restrictToLoggedInUser from './middleware/auth.js';
+import { restrictToLoggedInUser, checkAuth } from './middleware/auth.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -31,10 +31,15 @@ app.use('/url', restrictToLoggedInUser, urlRoutes);
 app.use('/user', userRoutes);
 
 
-app.get('/', async (req, res) => {
-    const allURLs = await URL.find();
-    res.render('home', { urls: allURLs });  // use "urls" to match template
+app.get('/', checkAuth, async (req, res) => {
+    if (!req.user) {
+        return res.render('login');
+    }
+
+    const urls = req.user ? await URL.find({ createdBy: req.user._id }) : [];
+    res.render('home', { urls });
 });
+
 
 app.get('/signup', (req, res) => {
     res.render('signup');  // Render registration page

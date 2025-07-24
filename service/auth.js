@@ -1,11 +1,15 @@
-const sessionIdToUserMap = new Map();
+import User from '../models/user.js'; // Import your User model
 
-function setUser(id, user){
-    sessionIdToUserMap.set(id, user);
+async function getUser(id) {
+    try {
+        return await User.findById(id); // Fetch user from DB
+    } catch {
+        return null;
+    }
 }
 
-function getUser(id){
-    return sessionIdToUserMap.get(id);
+function setUser() {
+    // NOOP or deprecated – we won't use in-memory anymore
 }
 
-export { setUser, getUser };
+export { getUser, setUser }; // Keep `setUser` if legacy code uses it

@@ -18,14 +18,18 @@
 
     <% if (urls.length > 0) { %>
         <ul>
-            <% urls.forEach(url => { %>
+            <% urls.forEach(url => {
+                const displayURL = url.redirectURL.startsWith('http://') || url.redirectURL.startsWith('https://')
+                    ? url.redirectURL
+                    : 'http://' + url.redirectURL;
+            %>
                 <li>
                     <a href="http://localhost:3000/<%= url.shortID %>" target="_blank">
                         http://localhost:3000/<%= url.shortID %>
                     </a>
                     &nbsp;→&nbsp;
-                    <a href="<%= url.redirectURL %>" target="_blank">
-                        <%= url.redirectURL %>
+                    <a href="<%= displayURL %>" target="_blank">
+                        <%= displayURL %>
                     </a>
                 </li>
             <% }) %>

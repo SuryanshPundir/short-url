@@ -2,15 +2,25 @@ import { getUser } from '../service/auth.js';
 
 async function restrictToLoggedInUser(req, res, next) {
     const userUid = req.cookies.uid;
-    if (!userUid) {
-        return res.redirect('/login');
-    }
+    if (!userUid) return res.redirect('/login');
 
-    const user = getUser(userUid);
-    if (!user) {
-        return res.redirect('/login');
-    }
-    req.user = user; // Attach user to request object
+    const user = await getUser(userUid);
+    if (!user) return res.redirect('/login');
+
+    req.user = user;
     next();
 }
-export default restrictToLoggedInUser;
+
+async function checkAuth(req, res, next) {
+    const userUid = req.cookies.uid;
+    if (!userUid) {
+        req.user = null;
+        return next();
+    }
+
+    const user = await getUser(userUid);
+    req.user = user || null;
+    next();
+}
+
+export { restrictToLoggedInUser, checkAuth };

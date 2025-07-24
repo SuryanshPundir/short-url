@@ -6,8 +6,8 @@ async function handleGenerateNewShortUrl(req, res) {
 
   if (!url) return res.status(400).json({ error: "URL is required" });
 
-  // ✅ Add http:// if missing
-  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+  // ✅ Normalize the URL
+  if (!/^https?:\/\//i.test(url)) {
     url = 'http://' + url;
   }
 
