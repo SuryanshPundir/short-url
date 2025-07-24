@@ -1,7 +1,9 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import urlRoutes from './routes/url.js';
 import URL from './models/url.js';
+
+import urlRoutes from './routes/url.js';
+import userRoutes from './routes/user.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -23,12 +25,20 @@ app.set('views', './views');
 
 // Routes
 app.use('/url', urlRoutes);
+app.use('/user', userRoutes);
 
 app.get('/', async (req, res) => {
     const allURLs = await URL.find();
     res.render('home', { urls: allURLs });  // use "urls" to match template
 });
 
+app.get('/signup', (req, res) => {
+    res.render('signup');  // Render registration page
+});
+
+app.get('/login', (req, res) => {
+    res.render('login');
+});
 // Redirect route
 app.get('/:shortID', async (req, res) => {
     const shortID = req.params.shortID;
