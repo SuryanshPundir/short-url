@@ -1,15 +1,24 @@
-import User from '../models/user.js'; // Import your User model
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
-async function getUser(id) {
+dotenv.config();
+
+// Create a JWT from a user object (usually _id or essential info only)
+// service/auth.js
+function setUser(user) {
+    // Ensure user is a plain object like { _id: "...", email: "...", etc. }
+    return jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+}
+
+
+// Extract user from token
+function getUser(token) {
     try {
-        return await User.findById(id); // Fetch user from DB
-    } catch {
+        return jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+        console.error('❌ Invalid token:', err.message);
         return null;
     }
 }
 
-function setUser() {
-    // NOOP or deprecated – we won't use in-memory anymore
-}
-
-export { getUser, setUser }; // Keep `setUser` if legacy code uses it
+export { getUser, setUser };
